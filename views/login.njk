@@ -1,0 +1,14 @@
+{% extends "layout.njk" %}
+{% block  content %}
+
+<form action="/login" method="POST">
+    <label for="username">Användarnamn</label>
+    <input type="text" name="username" id="username">
+    <label for="password">Lösenord</label>
+    <input type="password" name="password" id="password">
+    <button type="submit">Login</button>
+</form>
+
+<a href="/register">Registrera</a>
+
+{% endblock %}
