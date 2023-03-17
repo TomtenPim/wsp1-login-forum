@@ -1,0 +1,10 @@
+<nav class="navbar">
+            <a href="/" class="logo">Super</a>
+            <ul>
+                {% for item in nav %}
+                    <li>
+                        <a href="{{ item.url }}">{{item.title}}</a>
+                    </li>
+                {% endfor %}
+            </ul>  
+</nav>

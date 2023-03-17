@@ -1,0 +1,42 @@
+body {
+  background-color: white;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
+
+ul {
+  list-style: none;
+}
+
+.content {
+  margin: 1rem;
+}
+.content > ul > li > .post > .center {
+  padding-right: 10px;
+  background-color: rgb(216, 255, 242);
+  padding-left: 10px;
+}
+
+nav {
+  width: 100%;
+  background-color: rgb(216, 255, 242);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+nav > .logo {
+  padding-left: 10px;
+  padding-right: 10px;
+}
+nav > ul {
+  display: flex;
+}
+nav > ul > li {
+  padding-left: 10px;
+  padding-right: 10px;
+}
+
+/*# sourceMappingURL=style.css.map */
