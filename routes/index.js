@@ -53,7 +53,7 @@ router.get('/new', async function (req, res, next) {
 
         const [users] = await promisePool.query('SELECT * FROM sa04loginUsers');
         res.render('new.njk', {
-            users,
+            user: req.session.id,
             title: 'Nytt inlägg',
             nav: nav,
         });
@@ -63,19 +63,12 @@ router.get('/new', async function (req, res, next) {
 });
 
 router.post('/new', async function (req, res, next) {
-    const { author, title, content } = req.body;
+    const {title, content } = req.body;
 
+    //console.log(user)
+    const [authorId] = await promisePool.query('SELECT id FROM sa04loginUsers WHERE author = ?', [req.session.username]);
 
-
-    let [user] = await promisePool.query('SELECT * FROM sa04loginUsers WHERE name = ?', [author]);
-    if (user.length === 0) {
-        [user] = await promisePool.query('INSERT INTO sa04loginUsers (name) VALUES (?)', [author]);
-    }
-
-    console.log(user)
-    const authorId = user.insertId || user[0].id;
-
-    const [rows] = await promisePool.query('INSERT INTO srb26forum (authorId, title, content) VALUES (?, ?, ?)', [authorId, title, content]);
+    const [rows] = await promisePool.query('INSERT INTO srb26forum (authorId , title, content) VALUES (?, ?, ?)', [authorId, title, content]);
     res.redirect('/');
 });
 
