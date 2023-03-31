@@ -11,7 +11,7 @@ const pool = mysql.createPool({
 });
 const promisePool = pool.promise();
 
-const nav = [
+const nav = [ 
     {
         url: "/profile",
         title: "Profile"
@@ -32,6 +32,7 @@ const nav = [
         url: "/error",
         title: "Error"
     },
+    
 ]
 
 

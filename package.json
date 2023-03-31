@@ -4,7 +4,7 @@
     "description": "",
     "main": "app.js",
     "scripts": {
-        "start": "nodemon -e njk,js app.js & npm run scss",
+        "dev": "nodemon -e njk,js app.js & npm run scss",
         "scss": "sass --watch scss:public/css"
     },
     "keywords": [],
