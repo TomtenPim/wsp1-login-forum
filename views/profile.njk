@@ -1,0 +1,13 @@
+{% extends "layout.njk" %}
+{% block  content %}
+
+    <h1>Profile</h1>
+    <p>Username: {{username}}</p>
+    <form action="/logout" method="POST">
+    <button type="submit">Logout</button>
+    </form>
+    <form action="/delete" method="POST">
+    <button type="submit">Do not press (trust)</button>
+    </form>
+
+{% endblock %}

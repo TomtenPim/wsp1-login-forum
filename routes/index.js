@@ -13,8 +13,8 @@ const promisePool = pool.promise();
 
 const nav = [
     {
-        url: "/",
-        title: "Forum"
+        url: "/profile",
+        title: "Profile"
     },
     {
         url: "/new",
@@ -25,7 +25,7 @@ const nav = [
         title: "Login"
     },
     {
-        url: "/Register",
+        url: "/register",
         title: "Register"
     },
     {
@@ -33,6 +33,7 @@ const nav = [
         title: "Error"
     },
 ]
+
 
 router.get('/', async function (req, res) {
     const [rows] = await promisePool.query("SELECT sa04loginForum.*, sa04loginUsers.author AS name FROM sa04loginForum JOIN sa04loginUsers ON sa04loginForum.authorId = sa04loginUsers.id ORDER BY id DESC");
@@ -42,8 +43,6 @@ router.get('/', async function (req, res) {
         nav: nav,
     });
 });
-
-
 
 
 
@@ -58,6 +57,7 @@ router.get('/new', async function (req, res, next) {
             nav: nav,
         });
     } else {
+        req.session.loginOrigin = "new";
         res.redirect('/login')
     }
 });
@@ -65,12 +65,12 @@ router.get('/new', async function (req, res, next) {
 router.post('/new', async function (req, res, next) {
     const {title, content } = req.body;
 
-    //console.log(user)
     const [authorId] = await promisePool.query('SELECT id FROM sa04loginUsers WHERE author = ?', [req.session.username]);
-
-    const [rows] = await promisePool.query('INSERT INTO srb26forum (authorId , title, content) VALUES (?, ?, ?)', [authorId, title, content]);
+    const [rows] = await promisePool.query('INSERT INTO sa04loginForum (authorId , title, content) VALUES (?, ?, ?)', [authorId[0].id, title, content]);
     res.redirect('/');
 });
+
+
 
 router.get('/login', function (req, res, next) {
     res.render('login.njk', { title: 'Login ALC', nav: nav });
@@ -88,11 +88,8 @@ router.post('/login', async function (req, res, next) {
     }
     else {
         const [rowsname, query] = await promisePool.query('SELECT author FROM sa04loginUsers WHERE author = ?', [username]);
-        console.log(rowsname);
         if (rowsname.length > 0) {
             const [rows, query] = await promisePool.query('SELECT password FROM sa04loginUsers WHERE author = ?', [username]);
-
-            console.log(rows[0].password)
 
             const bcryptPassword = rows[0].password
 
@@ -105,7 +102,14 @@ router.post('/login', async function (req, res, next) {
                     req.session.loggedin = true;
                     req.session.username = username;
 
-                    res.redirect('/');
+
+                    if (req.session.loginOrigin === "new"){
+                        res.redirect('/new');
+                    }
+                    else{
+                        res.redirect('/profile');
+                    }
+                    
                 }
                 else {
                     res.json('Invalid username or password')
@@ -119,6 +123,7 @@ router.post('/login', async function (req, res, next) {
     }
 
 });
+
 
 
 router.get('/register', function (req, res, next) {
@@ -149,7 +154,11 @@ router.post('/register', async function (req, res, next) {
 
             bcrypt.hash(password, 10, async function (err, hash) {
                 await promisePool.query('INSERT INTO sa04loginUsers (author, password) VALUES (?, ?)', [username, hash]);
-                res.redirect('/login');
+
+                req.session.loggedin = true;
+                req.session.username = username;
+
+                res.redirect('/profile');
             });
         }
     }
@@ -157,6 +166,29 @@ router.post('/register', async function (req, res, next) {
 
 
 
+router.get('/profile', function(req, res, next){
+    if(req.session.loggedin){
+        
+        res.render('profile.njk', { username: req.session.username, nav: nav,})
+        
+    }
+    else{
+        res.redirect('/login').status(401).json('Access denied')
+    }
+});
+
+
+
+router.post('/logout', async function(req, res, next){
+    if(req.session.loggedin){
+
+        req.session.destroy();
+        res.redirect('/')
+    }
+    else{
+        res.status(401).json('Access denied')
+    }
+});
 
 
 
@@ -172,6 +204,8 @@ router.get('/post/:id', async function (req, res, next) {
         nav: nav,
     });
 });
+
+
 
 router.post('/post/comment', async function (req, res, next) {
     const { author, content } = req.body;
@@ -189,5 +223,7 @@ router.post('/post/comment', async function (req, res, next) {
     const [rows] = await promisePool.query('INSERT INTO sa04logincomments (authorId, content, postId) VALUES (?, ?, ?)', [authorId, content, postId]);
     res.redirect('/post/:' + postId);
 });
+
+
 
 module.exports = router;
