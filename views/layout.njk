@@ -9,6 +9,9 @@
 </head>
 <body>
     {% include "navigation.njk" %}
+    <div class="errors">
+        <p>{{err}}</p>
+    </div>
     <div class="content">
     {% block  content %}
     {% endblock %}

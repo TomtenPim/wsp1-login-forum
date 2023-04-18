@@ -10,6 +10,7 @@ const pool = mysql.createPool({
     password: process.env.DB_PASSWORD,
 });
 const promisePool = pool.promise();
+let errors = [];
 
 const nav = [ 
     {
@@ -65,10 +66,46 @@ router.get('/new', async function (req, res, next) {
 
 router.post('/new', async function (req, res, next) {
     const {title, content } = req.body;
+    errors = [];
+    if (!title){
+        errors.push('Title is required');
+    }
+    else if (!content){
+        errors.push('Content is required');
+    }
+    else if (title && title.length < 3){
+        errors.push('Title must be at least 3 characters');
+    }
+    else if (content && content.length < 10){
+        errors.push('Content must be at least 10 characters');
+    }
+    
+    if (errors.length === 0) {
+        // sanitize title och body, tvätta datan
+        const sanitize = (str) => {
+            let temp = str.trim();
+            temp = validator.stripLow(temp);
+            temp = validator.escape(temp);
+            return temp;
+        };
+        if (title) {
+            const sanitizedTitle = sanitize(title);
+        }
+        if (content) {
+            const sanitizedContent = sanitize(content);
+        }
 
-    const [authorId] = await promisePool.query('SELECT id FROM sa04loginUsers WHERE author = ?', [req.session.username]);
-    const [rows] = await promisePool.query('INSERT INTO sa04loginForum (authorId , title, content) VALUES (?, ?, ?)', [authorId[0].id, title, content]);
-    res.redirect('/');
+        const [authorId] = await promisePool.query('SELECT id FROM sa04loginUsers WHERE author = ?', [req.session.username]);
+    
+        const [rows] = await promisePool.query('INSERT INTO sa04loginForum (authorId , title, content) VALUES (?, ?, ?)', [authorId[0].id, sanitizedTitle, sanitizedContent]);
+        res.redirect('/');
+    }
+    else res.render('new.njk', {
+            user: req.session.id,
+            title: 'Nytt inlägg',
+            nav: nav,
+            err: errors,
+        });
 });
 
 
@@ -133,20 +170,25 @@ router.get('/register', function (req, res, next) {
 
 router.post('/register', async function (req, res, next) {
     const { username, password, passwordConfirmation, } = req.body;
+    errors = []
 
     if (username.length === 0) {
-        res.json('Username is Required')
+        errors.push('Username is Required')
     }
 
     else if (password.length === 0) {
-        res.json('Password is Required')
+        errors.push('Password is Required')
+    }
+    
+    else if (password.length < 7) {
+        errors.push('Password must be at least 8 characters')
     }
 
     else if (passwordConfirmation !== password) {
-        res.json('Passwords do not match')
+        errors.push('Passwords do not match')
     }
 
-    else {
+    if (errors.length === 0){
         const [user, query] = await promisePool.query('SELECT author FROM sa04loginUsers WHERE author = ?', [username]);
         if (user.length > 0) {
             res.json('Username is already taken')
@@ -163,6 +205,13 @@ router.post('/register', async function (req, res, next) {
             });
         }
     }
+    
+    else  res.render('register.njk', {
+            user: req.session.id,
+            title: 'Lägg till användare',
+            nav: nav,
+            err: errors,
+        });
 });
 
 
@@ -185,9 +234,6 @@ router.post('/logout', async function(req, res, next){
 
         req.session.destroy();
         res.redirect('/')
-    }
-    else{
-        res.status(401).json('Access denied')
     }
 });
 
