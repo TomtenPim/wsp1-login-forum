@@ -3,7 +3,11 @@
     "version": "1.0.0",
     "description": "",
     "main": "app.js",
+    "engines": {
+        "node": ">=16"
+    },
     "scripts": {
+        "start": "node sever.js",
         "dev": "nodemon -e njk,js app.js & npm run scss",
         "scss": "sass --watch scss:public/css"
     },
