@@ -5,9 +5,6 @@ const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 const nunjucks = require('nunjucks');
 const session = require('express-session');
-const app = express();
-const bodyParser = require('body-parser');
-const port = 3000;
 
 const indexRouter = require('./routes/index');
 const createError = require('http-errors');
@@ -36,12 +33,6 @@ app.use(function (err, req, res, next){
     res.status(err.status || 500);
     res.render('error.njk')
 })
-
-
-app.listen(port, () => {
-    console.log(`Example app listening on port ${port}`);
-});
-
 
 app.use(logger('dev'));
 app.use(express.json());

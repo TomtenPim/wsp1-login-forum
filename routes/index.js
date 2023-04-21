@@ -10,6 +10,7 @@ const pool = mysql.createPool({
     password: process.env.DB_PASSWORD,
 });
 const promisePool = pool.promise();
+const validator = require('validator');
 let errors = [];
 
 const nav = [ 
@@ -223,7 +224,8 @@ router.get('/profile', function(req, res, next){
         
     }
     else{
-        res.redirect('/login').status(401).json('Access denied')
+        res.redirect('/login')
+          //.status(401).json('Access denied')
     }
 });
 

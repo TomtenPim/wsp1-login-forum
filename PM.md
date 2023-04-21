@@ -14,20 +14,7 @@ Jag valde att göra dett agenom att kopiera forumarbetet jag redan hade och seda
 
 Då man lyckats samankopplat de två delarna skulle man även fixa till hur nya inlägg och registreringar skulle fungera så att de följer en viss säkerhetsstandard. 
 
-h
 
-Redovisa arbetets olika delar. Så att läsaren förstår vad du gjort och hur.
-
-Använd gärna bilder för att illustrera.
-
-För att lägga till bilder i markdown. Bilderna kan du ladda upp med Git som vanligt, länka dem med url eller filnamnet.
-
-```
-![GitHub Logo](/images/logo.png)
-Format: ![Alt Text](url)
-```
-
-![NTI Gymnasiet Umeå Logo](https://raw.githubusercontent.com/jensnti/Webbprojekt/master/mallar/nti_logo_white_umea.svg)
 
 ## Positiva erfarenheter
 
